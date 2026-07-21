@@ -42,8 +42,7 @@
 
   header.top{
     position:sticky; top:0; z-index:20;
-    background:linear-gradient(180deg, rgba(0,0,0,0.98), rgba(0,0,0,0.94));
-    backdrop-filter: blur(6px);
+    background:#000000;
     padding: calc(18px + env(safe-area-inset-top)) 18px 12px;
     border-bottom:1px solid var(--line);
     box-shadow: 0 1px 24px rgba(139,92,246,0.12);
@@ -119,6 +118,13 @@
     background:linear-gradient(135deg, var(--amber), var(--amber-2)); color:#fff; font-size:15.5px; line-height:1;
     display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px var(--glow);
   }
+  .qty-edit-btn{
+    width:26px; height:26px; border-radius:50%; flex-shrink:0; margin-left:8px;
+    background:none; border:1px solid var(--line); color:var(--amber);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .qty-edit-btn:active{ background:var(--surface-2); border-color:var(--amber); }
   .extra-entry .eyebrow{ color:var(--rust); font-size:9px; }
   .entry{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--line); }
   .entry:last-child{border-bottom:none;}
@@ -167,7 +173,7 @@
 
   nav.tabbar{
     position:fixed; bottom:14px; left:14px; right:14px; z-index:30;
-    background:rgba(0,0,0,0.92); backdrop-filter:blur(10px);
+    background:#0a0710;
     border:1px solid var(--line);
     border-radius:999px;
     box-shadow:0 8px 32px rgba(0,0,0,0.5), 0 0 24px rgba(139,92,246,0.10);
@@ -179,7 +185,7 @@
     backface-visibility: hidden;
   }
   nav.tabbar button{ flex:1; background:none; border:none; color:var(--ink-dim); display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 4px; cursor:pointer; font-size:10.5px; letter-spacing:0.4px; border-radius:999px; transition:background .15s ease, color .15s ease; }
-  nav.tabbar button .icon{font-size:19px;}
+  nav.tabbar button .icon{font-size:19px; display:flex; align-items:center; justify-content:center;}
   nav.tabbar button.active{
     color:#fff; background:linear-gradient(135deg, var(--amber), var(--amber-2));
     box-shadow:0 0 20px var(--glow);
@@ -242,6 +248,20 @@
   .ex-text ul{ margin:4px 0; padding-left:20px; }
   .ex-text li{ margin-bottom:4px; }
 
+  .recipe-card{
+    display:flex; align-items:center; gap:12px; padding:10px; border-radius:14px;
+    background:var(--surface-2); border:1px solid var(--line); margin-bottom:10px; cursor:pointer;
+  }
+  .recipe-card .recipe-thumb{ width:72px; height:72px; flex-shrink:0; background:var(--bg); border-radius:12px; overflow:hidden; }
+  .recipe-card .recipe-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .recipe-card .recipe-name{ font-size:15.5px; font-weight:600; }
+  .recipe-card .recipe-match{ font-size:12.5px; color:var(--sage); font-family:var(--mono); margin-top:3px; }
+  .recipe-hero{ width:100%; border-radius:16px; overflow:hidden; margin-bottom:14px; }
+  .recipe-hero img{ width:100%; height:auto; display:block; }
+  .recipe-ing-row{ display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px dashed var(--line); font-size:14.5px; }
+  .recipe-ing-row:last-child{ border-bottom:none; }
+  .recipe-ing-row .amt{ color:var(--ink-dim); font-family:var(--mono); font-size:13px; }
+
   .cal-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
   .cal-header .navbtn{background:none;border:1px solid var(--line); color:var(--ink-dim); border-radius:8px; width:30px;height:30px; cursor:pointer;}
   .cal-title{font-family:var(--serif); font-size:17.5px;}
@@ -270,7 +290,7 @@
   <div class="daynav" id="daynavWrap">
     <button class="navbtn" id="prevDay">‹</button>
     <div class="datelabel" id="dateLabelBtn"><span id="dateMain">—</span><span class="sub" id="dateSub"></span></div>
-    <button class="calbtn" id="btnOpenCal">📅</button>
+    <button class="calbtn" id="btnOpenCal"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/></svg></button>
     <button class="navbtn" id="nextDay">›</button>
   </div>
 </header>
@@ -320,13 +340,16 @@
   <!-- ALLENAMENTI -->
   <section class="tab" id="tab-allenamenti">
     <div class="card">
-      <button class="btn primary block" id="btnAddWorkout">＋ Registra allenamento</button>
+      <h3>📏 I miei massimali</h3>
+      <p style="font-size:13px; color:var(--ink-dim); margin-top:-6px;">Servono anche a calcolare i pesi in percentuale quando registri un allenamento nel Diario.</p>
+      <div id="maxliftsInlineList" style="margin-top:6px;"></div>
+      <button class="btn primary block" id="btnAddMaxlift" style="margin-top:12px;">➕ Aggiungi massimale</button>
     </div>
     <div class="card">
-      <button class="btn block" id="btnOpenMaxlifts">📏 I miei massimali</button>
+      <button class="btn block" id="btnGoToProgressiFromAllenamenti">📈 Vedi i tuoi progressi</button>
     </div>
-    <div class="card">
-      <h3>Allenamenti del giorno</h3>
+    <button id="btnAddWorkout" style="display:none;"></button>
+    <div style="display:none;">
       <div id="workoutList"></div>
     </div>
   </section>
@@ -363,13 +386,45 @@
     </div>
   </section>
 
+  <!-- PROGRESSI -->
+  <section class="tab" id="tab-progressi">
+    <div class="card">
+      <h3>🍽️ Aderenza alla dieta</h3>
+      <div id="dietAdherenceContent"></div>
+    </div>
+    <div class="card">
+      <h3>🏋️ Andamento massimali</h3>
+      <div id="maxliftsProgressContent"></div>
+    </div>
+    <div class="card">
+      <h3>⚖️ Andamento peso e misure</h3>
+      <div id="measureProgressContent"></div>
+    </div>
+  </section>
+
+  <!-- RICETTE -->
+  <section class="tab" id="tab-ricette">
+    <div class="card">
+      <h3>🍳 Ricette dagli ingredienti</h3>
+      <p style="font-size:13px; color:var(--ink-dim); margin-top:-6px;">Scrivi cosa hai in casa (separato da virgole) e trova ricette che li usano.</p>
+      <input type="text" id="recipeIngredientsInput" placeholder="es. pollo, riso, peperoni">
+      <button class="btn primary block" id="recipeSearchBtn" style="margin-top:10px;">Cerca ricette</button>
+    </div>
+    <div class="card" id="recipeResultsCard" style="display:none;">
+      <h3>Risultati</h3>
+      <div id="recipeResults"></div>
+    </div>
+  </section>
+
 </main>
 
 <nav class="tabbar">
-  <button class="tabbtn active" data-tab="diario"><span class="icon">🍽️</span>Diario</button>
-  <button class="tabbtn" data-tab="allenamenti"><span class="icon">🏋️</span>Allenamenti</button>
-  <button class="tabbtn" data-tab="misure"><span class="icon">⚖️</span>Misure</button>
-  <button class="tabbtn" data-tab="spesa"><span class="icon">🛒</span>Spesa</button>
+  <button class="tabbtn active" data-tab="diario"><span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="7"/><path d="M17 5v14"/><path d="M21 5v6a2 2 0 0 1-2 2"/><path d="M21 5v14"/></svg></span>Diario</button>
+  <button class="tabbtn" data-tab="ricette"><span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 1 1 16 0Z"/><path d="M4 13h16"/><path d="M9 13a3 3 0 0 1 6 0"/><path d="M2 21h20"/></svg></span>Ricette</button>
+  <button class="tabbtn" data-tab="spesa"><span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/><path d="M2.5 3h2l2.4 12.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 7H6"/></svg></span>Spesa</button>
+  <button class="tabbtn" data-tab="allenamenti"><span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5 17.5 17.5"/><path d="M4 4l3 3M17 17l3 3"/><rect x="2" y="8" width="5" height="8" rx="1.5" transform="rotate(-45 4.5 12)"/><rect x="17" y="8" width="5" height="8" rx="1.5" transform="rotate(-45 19.5 12)"/></svg></span>Allenamenti</button>
+  <button class="tabbtn" data-tab="misure"><span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3"/><path d="M5 8h14"/><path d="M5 8l-3 7a3 3 0 0 0 6 0Z"/><path d="M19 8l-3 7a3 3 0 0 0 6 0Z"/><path d="M7 21h10"/><path d="M12 6v15"/></svg></span>Misure</button>
+  <button class="tabbtn" data-tab="progressi"><span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-5 3 3 5-7"/></svg></span>Progressi</button>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -460,15 +515,43 @@
     <div class="off-result" style="margin-top:4px;"><div class="pname" id="manualMealLabel">—</div></div>
     <label class="field">Nome</label>
     <input type="text" id="manualName" placeholder="es. Insalata di quinoa">
+
+    <label class="field">Valori nutrizionali per 100g</label>
     <div class="grid4">
-      <div><label class="field">Kcal</label><input type="number" id="manualKcal" placeholder="0"></div>
-      <div><label class="field">Prot. g</label><input type="number" id="manualProt" placeholder="0"></div>
-      <div><label class="field">Carb. g</label><input type="number" id="manualCarb" placeholder="0"></div>
-      <div><label class="field">Grassi g</label><input type="number" id="manualFat" placeholder="0"></div>
+      <div><label class="field" style="margin-top:0; font-size:11px;">Kcal</label><input type="number" id="manualKcal100" placeholder="0"></div>
+      <div><label class="field" style="margin-top:0; font-size:11px;">Prot. g</label><input type="number" id="manualProt100" placeholder="0"></div>
+      <div><label class="field" style="margin-top:0; font-size:11px;">Carb. g</label><input type="number" id="manualCarb100" placeholder="0"></div>
+      <div><label class="field" style="margin-top:0; font-size:11px;">Grassi g</label><input type="number" id="manualFat100" placeholder="0"></div>
     </div>
-    <label class="field">Nota libera (facoltativa — es. "pranzo fuori, porzione abbondante")</label>
-    <textarea id="manualNote" rows="2" placeholder="Scrivi qui se non conosci i valori esatti..."></textarea>
+
+    <label class="field">Quantità mangiata (g)</label>
+    <input type="number" id="manualQty" value="100" min="1">
+
+    <div class="off-result" style="margin-top:12px;">
+      <div class="eyebrow" style="margin:0 0 6px;">Totale calcolato per questa quantità</div>
+      <div class="pname" id="manualComputedPreview">0 kcal · P 0g · C 0g · G 0g</div>
+    </div>
+
+    <label class="field">Nota libera (facoltativa)</label>
+    <textarea id="manualNote" rows="2" placeholder="Scrivi qui se vuoi aggiungere dettagli..."></textarea>
     <button class="btn primary block" style="margin-top:16px;" id="manualSaveBtn">Aggiungi al diario</button>
+  </div>
+</div>
+
+<!-- EDIT PLAN QTY MODAL -->
+<div class="modal-backdrop" id="modalEditQty">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" data-close="modalEditQty">✕</button>
+    <div class="modal-handle"></div>
+    <h2 id="editQtyName">Modifica grammi</h2>
+    <label class="field" style="margin-top:0;">Grammi</label>
+    <input type="number" id="editQtyInput" min="1">
+    <div class="off-result" style="margin-top:12px;">
+      <div class="eyebrow" style="margin:0 0 6px;">Macro ricalcolate</div>
+      <div class="pname" id="editQtyPreview">0 kcal · P 0g · C 0g · G 0g</div>
+    </div>
+    <button class="btn primary block" style="margin-top:16px;" id="editQtySaveBtn">Salva</button>
+    <button class="btn ghost block" style="margin-top:8px;" id="editQtyResetBtn">Ripristina grammi originali</button>
   </div>
 </div>
 
@@ -561,6 +644,26 @@
   </div>
 </div>
 
+<!-- RECIPE DETAIL MODAL -->
+<div class="modal-backdrop" id="modalRecipeDetail">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" data-close="modalRecipeDetail">✕</button>
+    <div class="modal-handle"></div>
+    <div id="recipeDetailContent"></div>
+  </div>
+</div>
+
+<!-- CATEGORY PICK MODAL -->
+<div class="modal-backdrop" id="modalCategoryPick">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" data-close="modalCategoryPick">✕</button>
+    <div class="modal-handle"></div>
+    <h2>Categoria per <span id="categoryPickName">—</span></h2>
+    <p style="font-size:13px; color:var(--ink-dim); margin-top:-6px;">La scelta viene ricordata per questo alimento anche nelle prossime liste.</p>
+    <div class="chips" id="categoryPickChips"></div>
+  </div>
+</div>
+
 <!-- TARGETS MODAL -->
 <div class="modal-backdrop" id="modalTargets">
   <div class="modal" style="position:relative;">
@@ -591,14 +694,13 @@
 
 <datalist id="strengthExerciseList"></datalist>
 
-<!-- MAXLIFTS MODAL -->
+<!-- MAXLIFT ADD/EDIT MODAL -->
 <div class="modal-backdrop" id="modalMaxlifts">
   <div class="modal" style="position:relative;">
     <button class="modal-close" data-close="modalMaxlifts">✕</button>
     <div class="modal-handle"></div>
-    <h2>I miei massimali (1RM)</h2>
-    <div id="maxliftsList" style="margin-bottom:14px;"></div>
-    <label class="field">Esercizio</label>
+    <h2 id="maxliftModalTitle">Aggiungi massimale</h2>
+    <label class="field" style="margin-top:0;">Esercizio</label>
     <input type="text" id="maxliftExercise" list="strengthExerciseList" placeholder="es. Stacco da terra">
     <label class="field">Massimale (kg)</label>
     <input type="number" id="maxliftWeight" step="0.5" placeholder="110">
@@ -803,7 +905,54 @@
   function mk(name, qty, unit, kcal, prot, carb, fat){ return {name, qty, unit: unit||null, kcal, prot, carb, fat}; }
 
   const RAW_PLAN = {
-    lun: [], mar: [], mer: [], gio: [], ven: [], sab: [], dom: [],
+    lun: [
+      ['Colazione', [mk('Bresaola',70,'g',123.19,23.8,0.0,3.01), mk('Olio extravergine oliva',5,'1/2 cucchiaio',46.5,0,0,5.0), mk('Pane integrale',80,'g',197.22,6.0,43.04,1.04), mk('Latte scremato',150,'g',54.6,5.4,7.95,0.3)]],
+      ['Spuntino 1', [mk('Cracker integrali',30,'g',108.09,4.2,18.15,2.4), mk('Mandorle',20,'g',111.63,3.2,0.8,10.3)]],
+      ['Pranzo', [mk('Pane integrale',80,'g',197.22,6.0,43.04,1.04), mk('Cetriolo',150,'g',21.44,1.05,2.7,0.75), mk('Uovo di gallina, albume',168,'4 uova',109.6,18.31,1.34,3.36), mk('Uovo di gallina, intero',120,'2 uova',190.84,15.6,1.2,13.32)]],
+      ['Spuntino 2', [mk('Mela',200,'1 frutto',90.78,0.4,22,0.6), mk('Miele',10,'g',30.75,0.06,8.03,0.0), mk('Kefir colato greco',150,'1 vasetto',88.8,16.5,6.0,0.0)]],
+      ['Cena', [mk('Tacchino',300,'g',405.27,66.0,1.2,14.7), mk('Melanzane',200,'g',30.42,2.2,5.2,0.2), mk('Olio extravergine oliva',10,'1 cucchiaio',93.0,0,0,10.0)]],
+    ],
+    mar: [
+      ['Colazione', [mk('Burro di mandorle',20,'g',126.02,4.8,1.68,10.8), mk('Marmellata',20,'g',46.15,0.12,11.04,0.4), mk('Pane integrale',100,'g',246.53,7.5,53.8,1.3), mk('Latte scremato',150,'g',54.6,5.4,7.95,0.3)]],
+      ['Spuntino 1', [mk('Kefir colato greco',150,'1 vasetto',88.8,16.5,6.0,0.0)]],
+      ['Pranzo', [mk('Manzo',300,'g',488.67,57.3,0.0,27.9), mk('Patate',250,'g',215.25,5.25,45.0,2.5), mk('Olio extravergine oliva',10,'1 cucchiaio',93.0,0,0,10.0), mk('Pomodori',200,'g',34.6,2.4,5.6,0.4)]],
+      ['Spuntino 2', [mk('Prugne',200,'2/3 frutti',85.66,1.0,21.0,0.2)]],
+      ['Cena', [mk('Uovo di gallina, albume',84,'2 uova',54.8,9.16,0.67,1.68), mk('Merluzzo',300,'g',212.37,51.0,0.0,0.9), mk('Olio extravergine oliva',10,'1 cucchiaio',93.0,0,0,10.0), mk('Porri',250,'g',72.73,5.25,13.0,0.25)]],
+    ],
+    mer: [
+      ['Colazione', [mk('Pera',250,'g',102.55,0.75,23.75,1.0), mk('Bresaola',70,'g',123.19,23.8,0.0,3.01), mk('Pane integrale',80,'g',197.22,6.0,43.04,1.04), mk('Latte scremato',150,'g',54.6,5.4,7.95,0.3)]],
+      ['Spuntino 1', [mk('Mandorle',20,'g',111.63,3.2,0.8,10.3), mk('Cioccolato fondente',30,'g',166.46,1.74,17.01,10.2)]],
+      ['Pranzo', [mk('Pollo, petto',250,'g',242.93,55.5,0.0,2.25), mk('Riso basmati',60,'g',199.6,4.02,46.68,0.66), mk('Finocchi',200,'g',17.2,2.4,2.0,0.0), mk('Olio extravergine oliva',10,'1 cucchiaio',93.0,0,0,10.0)]],
+      ['Spuntino', [mk('Kefir colato greco',150,'1 vasetto',88.8,16.5,6.0,0.0)]],
+      ['Cena', [mk('Fagioli in scatola',200,'g',89.98,8.2,12.6,1.0), mk('Tacchino',200,'g',270.18,44.0,0.8,9.8), mk('Olio extravergine oliva',10,'1 cucchiaio',93.0,0,0,10.0), mk('Peperoni',250,'g',63.48,2.25,12.5,0.75)]],
+    ],
+    gio: [
+      ['Colazione', [mk('Uovo di gallina, intero',60,'1 uovo',95.42,7.8,0.6,6.66), mk('Uovo di gallina, albume',84,'2 uova',54.8,9.16,0.67,1.68), mk('Pane integrale',80,'g',197.22,6.0,43.04,1.04), mk('Latte scremato',150,'g',54.6,5.4,7.95,0.3)]],
+      ['Spuntino 1', [mk('Albicocche',200,'2/3 frutti',56.74,0.8,13.6,0.2)]],
+      ['Pranzo', [mk('Zucchine',200,'g',22.9,2.6,2.8,0.2), mk('Olio extravergine oliva',10,'1 cucchiaio',93.0,0,0,10.0), mk('Pane integrale',80,'g',197.22,6.0,43.04,1.04), mk('Salmone',280,'g',512.68,56.56,0.0,30.8)]],
+      ['Spuntino 2', [mk('Kefir colato greco',150,'1 vasetto',88.8,16.5,6.0,0.0)]],
+      ['Cena', [mk('Nasello',300,'g',219.9,48.0,0.0,3.0), mk('Olio extravergine oliva',10,'1 cucchiaio',93.0,0,0,10.0), mk('Patate',200,'g',172.2,4.2,36.0,2.0), mk('Spinaci',200,'g',63.02,6.8,6.0,1.4)]],
+    ],
+    ven: [
+      ['Colazione', [mk('Burro di mandorle',15,'g',94.52,3.6,1.26,8.1), mk('Pane integrale',60,'g',147.92,4.5,32.28,0.78), mk('Latte scremato',150,'g',54.6,5.4,7.95,0.3)]],
+      ['Spuntino 1', [mk('Melone',200,'g',66.36,1.6,14.8,0.4)]],
+      ['Pranzo', [mk('Gamberetti surgelati',350,'g',249.55,47.6,7.0,3.5), mk('Pasta di semola',80,'g',288.5,8.64,66.24,0.24), mk('Olio extravergine oliva',5,'1/2 cucchiaio',46.5,0,0,5.0), mk('Pomodori',200,'g',34.6,2.4,5.6,0.4)]],
+      ['Spuntino 2', [mk('Uovo di gallina, albume',126,'3 uova',82.2,13.73,1.01,2.52)]],
+      ['Cena', [mk('Lenticchie in scatola',200,'g',128.76,10.0,21.4,0.8), mk('Manzo',350,'g',570.12,66.85,0.0,32.55), mk('Olio extravergine oliva',10,'1 cucchiaio',93.0,0,0,10.0), mk('Lattuga',200,'g',38.56,3.6,4.4,0.8)]],
+    ],
+    sab: [
+      ['Colazione', [mk('Marmellata',10,'g',23.08,0.06,5.52,0.2), mk('Kefir colato greco',150,'1 vasetto',88.8,16.5,6.0,0.0)]],
+      ['Pranzo', [mk('Tonno al naturale',160,'g',165.1,40.16,0.0,0.48), mk('Olio extravergine oliva',10,'1 cucchiaio',93.0,0,0,10.0), mk('Carote',200,'g',66.56,2.2,15.2,0.0)]],
+      ['Spuntino', [mk('Miele',10,'g',30.75,0.06,8.03,0.0), mk('Kefir colato greco',150,'1 vasetto',88.8,16.5,6.0,0.0)]],
+      ['Cena', [mk('Pizza margherita normale',null,null,1104.0,50.0,140.0,40.0), mk('Grana',30,'condimento',116.57,10.65,1.11,7.5), mk('Salsiccia',50,'condimento',156.1,7.7,0.3,13.35), mk('Verdure miste',100,'condimento',69.3,3.33,13.46,0.52)]],
+    ],
+    dom: [
+      ['Colazione', [mk('Burro di mandorle',20,'g',126.02,4.8,1.68,10.8), mk('Marmellata',20,'g',46.15,0.12,11.04,0.4), mk('Pane integrale',80,'g',197.22,6.0,43.04,1.04), mk('Latte scremato',150,'g',54.6,5.4,7.95,0.3)]],
+      ['Spuntino', [mk('Kefir colato greco',150,'1 vasetto',88.8,16.5,6.0,0.0)]],
+      ['Pranzo', [mk('Piselli in scatola',200,'g',112.96,11.6,13.6,1.6), mk('Pollo, petto',330,'g',320.66,73.26,0.0,2.97), mk('Broccoli',250,'g',68.75,7.5,7.75,1.0)]],
+      ['Spuntino 2', [mk('Mirtilli',150,'g',45.72,0.9,10.35,0.3), mk('Mandorle',20,'g',111.63,3.2,0.8,10.3)]],
+      ['Cena', [mk('Pesce spada',330,'g',364.52,55.77,3.3,13.86), mk('Olio extravergine oliva',10,'1 cucchiaio',93.0,0,0,10.0), mk('Cavolo nero',250,'g',120.09,8.95,17.78,1.8)]],
+    ],
   };
 
   function buildTemplateFrom(rawPlanObj){
@@ -1017,9 +1166,10 @@
   let currentDate = new Date();
   let calViewMonth = new Date();
   let currentTab = 'diario';
-  let targets = { kcal:1715, prot:100, carb:230, fat:46 }; // media settimanale calcolata dal piano caricato
+  let targets = { kcal:1899, prot:170, carb:163, fat:65 }; // media settimanale della dieta di Ale
   let foodEntries = [];
   let checkedMap = {};
+  let planQtyOverride = {}; // { itemId: nuoviGrammi } per il giorno corrente
   let workoutEntries = [];
   let pendingMealTarget = 'Colazione'; // pasto a cui si sta aggiungendo (determinato dal + toccato)
   let quickFoodSel = null;
@@ -1166,18 +1316,19 @@
     buildChips($('#quickFoodChips'), QUICK_FOODS, ()=>quickFoodSel, v=>quickFoodSel=v);
   }
 
+  function switchToTab(tab){
+    $$('.tabbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+    currentTab = tab;
+    $$('.tab').forEach(t=>t.classList.remove('active'));
+    $('#tab-'+currentTab).classList.add('active');
+    const labels = {diario:'Diario', allenamenti:'Allenamenti', misure:'Misure', spesa:'Spesa', progressi:'Progressi', ricette:'Ricette'};
+    $('#daynavWrap').style.display = (currentTab === 'misure' || currentTab === 'spesa' || currentTab === 'progressi' || currentTab === 'ricette') ? 'none' : 'flex';
+    renderAll();
+  }
   $$('.tabbtn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      $$('.tabbtn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      currentTab = btn.dataset.tab;
-      $$('.tab').forEach(t=>t.classList.remove('active'));
-      $('#tab-'+currentTab).classList.add('active');
-      const labels = {diario:'Diario', allenamenti:'Allenamenti', misure:'Misure', spesa:'Spesa'};
-      $('#daynavWrap').style.display = (currentTab === 'misure' || currentTab === 'spesa') ? 'none' : 'flex';
-      renderAll();
-    });
+    btn.addEventListener('click', ()=> switchToTab(btn.dataset.tab));
   });
+  $('#btnGoToProgressiFromAllenamenti').addEventListener('click', ()=> switchToTab('progressi'));
 
   $('#prevDay').addEventListener('click', ()=>{ currentDate.setDate(currentDate.getDate()-1); loadDay(); });
   $('#nextDay').addEventListener('click', ()=>{ currentDate.setDate(currentDate.getDate()+1); loadDay(); });
@@ -1250,12 +1401,24 @@
     return activePlan[key] || PLAN_TEMPLATE[key] || [];
   }
 
+  // Calcola le macro effettive di un alimento del piano, applicando l'eventuale
+  // modifica dei grammi fatta dall'utente per oggi (ricalcolo proporzionale).
+  function effectiveItemMacros(it){
+    const override = planQtyOverride[it.id];
+    if(override == null || !it.qty || it.qty <= 0){
+      return { qty: it.qty, kcal: it.kcal||0, prot: it.prot||0, carb: it.carb||0, fat: it.fat||0 };
+    }
+    const factor = override / it.qty;
+    return { qty: override, kcal:(it.kcal||0)*factor, prot:(it.prot||0)*factor, carb:(it.carb||0)*factor, fat:(it.fat||0)*factor };
+  }
+
   function sumAll(){
     const totals = {kcal:0,prot:0,carb:0,fat:0};
     planItemsForDay().forEach(block=>{
       block.items.forEach(it=>{
         if(checkedMap[it.id]){
-          totals.kcal += it.kcal||0; totals.prot += it.prot||0; totals.carb += it.carb||0; totals.fat += it.fat||0;
+          const m = effectiveItemMacros(it);
+          totals.kcal += m.kcal; totals.prot += m.prot; totals.carb += m.carb; totals.fat += m.fat;
         }
       });
     });
@@ -1293,10 +1456,10 @@
       html += `<div class="empty">Nessun piano per questo giorno</div>`;
     } else {
       blocks.forEach((block, bi)=>{
-        const checkedKcal = block.items.reduce((a,it)=>a + (checkedMap[it.id] ? (it.kcal||0) : 0), 0);
+        const checkedKcal = block.items.reduce((a,it)=>a + (checkedMap[it.id] ? effectiveItemMacros(it).kcal : 0), 0);
         const extraForBlock = foodEntries.filter(e=>e.meal===block.label);
         const extraKcal = extraForBlock.reduce((a,e)=>a+(e.kcal||0),0);
-        const totalKcal = block.items.reduce((a,it)=>a + (it.kcal||0), 0) + extraForBlock.reduce((a,e)=>a+(e.kcal||0),0);
+        const totalKcal = block.items.reduce((a,it)=>a + effectiveItemMacros(it).kcal, 0) + extraForBlock.reduce((a,e)=>a+(e.kcal||0),0);
         html += `<div class="meal-group">
           <div class="meal-title">
             <span>${escapeHtml(block.label)}</span>
@@ -1307,14 +1470,18 @@
           </div>`;
         block.items.forEach(it=>{
           const on = !!checkedMap[it.id];
-          const qtyStr = it.qty ? `${it.qty}${it.unit==='g'?'g':' '+it.unit}` : (it.unit||'');
+          const eff = effectiveItemMacros(it);
+          const edited = planQtyOverride[it.id] != null;
+          const qtyStr = eff.qty ? `${eff.qty}${it.unit==='g'?'g':' '+it.unit}` : (it.unit||'');
+          const canEdit = it.qty && it.qty > 0;
           html += `<div class="plan-row ${on?'checked':''}" data-id="${it.id}">
             <div class="checkbox ${on?'on':''}">${on?'✓':''}</div>
             <div class="info">
               <div class="name">${escapeHtml(it.name)}</div>
-              <div class="meta">${escapeHtml(qtyStr)}</div>
+              <div class="meta">${escapeHtml(qtyStr)}${edited?' <span style="color:var(--amber);">(modificato)</span>':''}</div>
             </div>
-            <div class="kcal">${Math.round(it.kcal||0)} kcal</div>
+            <div class="kcal">${Math.round(eff.kcal)} kcal</div>
+            ${canEdit ? `<button class="qty-edit-btn" data-edit-id="${it.id}" title="Modifica grammi"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>` : ''}
           </div>`;
         });
         extraForBlock.forEach(e=>{
@@ -1344,6 +1511,12 @@
         await storeSet('checked:'+fmtDate(currentDate), checkedMap);
         renderPlan();
         renderTotals();
+      });
+    });
+    $$('.qty-edit-btn', wrap).forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        openEditQtyModal(btn.dataset.editId);
       });
     });
     $$('.meal-add-btn', wrap).forEach(btn=>{
@@ -1399,6 +1572,54 @@
   function renderDiario(){ renderTotals(); renderPlan(); }
 
   /* ---------- menu "+" per pasto ---------- */
+  /* ---------- modifica grammi di un alimento del piano ---------- */
+  let editQtyItemId = null;
+  function findPlanItemById(id){
+    for(const block of planItemsForDay()){
+      const found = block.items.find(it=>it.id===id);
+      if(found) return found;
+    }
+    return null;
+  }
+  function updateEditQtyPreview(it){
+    const qty = Number($('#editQtyInput').value) || 0;
+    const factor = it.qty ? (qty / it.qty) : 0;
+    const kcal = (it.kcal||0)*factor, prot=(it.prot||0)*factor, carb=(it.carb||0)*factor, fat=(it.fat||0)*factor;
+    $('#editQtyPreview').textContent = `${Math.round(kcal)} kcal · P ${prot.toFixed(1)}g · C ${carb.toFixed(1)}g · G ${fat.toFixed(1)}g`;
+  }
+  function openEditQtyModal(itemId){
+    const it = findPlanItemById(itemId);
+    if(!it) return;
+    editQtyItemId = itemId;
+    $('#editQtyName').textContent = it.name;
+    const current = planQtyOverride[itemId] != null ? planQtyOverride[itemId] : it.qty;
+    $('#editQtyInput').value = current;
+    updateEditQtyPreview(it);
+    $('#editQtyInput').oninput = ()=>updateEditQtyPreview(it);
+    openModal('modalEditQty');
+  }
+  $('#editQtySaveBtn').addEventListener('click', async ()=>{
+    const it = findPlanItemById(editQtyItemId);
+    if(!it) return;
+    const newQty = Number($('#editQtyInput').value);
+    if(!newQty || newQty <= 0){ toast('Inserisci un valore valido'); return; }
+    if(newQty === it.qty){ delete planQtyOverride[editQtyItemId]; }
+    else { planQtyOverride[editQtyItemId] = newQty; }
+    await storeSet('planqty:'+fmtDate(currentDate), planQtyOverride);
+    closeModal('modalEditQty');
+    renderDiario();
+    toast('Grammi aggiornati');
+  });
+  $('#editQtyResetBtn').addEventListener('click', async ()=>{
+    const it = findPlanItemById(editQtyItemId);
+    if(!it) return;
+    delete planQtyOverride[editQtyItemId];
+    await storeSet('planqty:'+fmtDate(currentDate), planQtyOverride);
+    closeModal('modalEditQty');
+    renderDiario();
+    toast('Ripristinati i grammi originali');
+  });
+
   function openAddMenu(mealLabel){
     pendingMealTarget = mealLabel;
     $('#addMenuMealLabel').textContent = mealLabel;
@@ -1432,25 +1653,52 @@
   });
 
   let manualPrefill = null;
+  function updateManualPreview(){
+    const kcal100 = Number($('#manualKcal100').value)||0;
+    const prot100 = Number($('#manualProt100').value)||0;
+    const carb100 = Number($('#manualCarb100').value)||0;
+    const fat100 = Number($('#manualFat100').value)||0;
+    const qty = Number($('#manualQty').value)||0;
+    const factor = qty/100;
+    const kcal = kcal100*factor, prot = prot100*factor, carb = carb100*factor, fat = fat100*factor;
+    $('#manualComputedPreview').textContent = `${Math.round(kcal)} kcal · P ${prot.toFixed(1)}g · C ${carb.toFixed(1)}g · G ${fat.toFixed(1)}g`;
+  }
+  $('#manualKcal100').addEventListener('input', updateManualPreview);
+  $('#manualProt100').addEventListener('input', updateManualPreview);
+  $('#manualCarb100').addEventListener('input', updateManualPreview);
+  $('#manualFat100').addEventListener('input', updateManualPreview);
+  $('#manualQty').addEventListener('input', updateManualPreview);
+
   function openManualAddModal(){
     manualPrefill = null;
     $('#manualTitle').textContent = 'Aggiungi alimento';
     $('#manualMealLabel').textContent = pendingMealTarget;
-    $('#manualName').value=''; $('#manualKcal').value=''; $('#manualProt').value='';
-    $('#manualCarb').value=''; $('#manualFat').value=''; $('#manualNote').value='';
+    $('#manualName').value='';
+    $('#manualKcal100').value=''; $('#manualProt100').value='';
+    $('#manualCarb100').value=''; $('#manualFat100').value='';
+    $('#manualQty').value = 100;
+    $('#manualNote').value='';
+    updateManualPreview();
     openModal('modalManual');
   }
   $('#manualSaveBtn').addEventListener('click', async ()=>{
     const name = $('#manualName').value.trim();
     const note = $('#manualNote').value.trim();
     if(!name && !note){ toast('Scrivi almeno un nome o una nota'); return; }
+    const kcal100 = Number($('#manualKcal100').value)||0;
+    const prot100 = Number($('#manualProt100').value)||0;
+    const carb100 = Number($('#manualCarb100').value)||0;
+    const fat100 = Number($('#manualFat100').value)||0;
+    const qty = Number($('#manualQty').value)||100;
+    const factor = qty/100;
     const entry = {
       id: uid(), meal: pendingMealTarget,
       name: name || note.slice(0,40) || 'Voce libera',
-      kcal: Number($('#manualKcal').value)||0,
-      prot: Number($('#manualProt').value)||0,
-      carb: Number($('#manualCarb').value)||0,
-      fat: Number($('#manualFat').value)||0,
+      qty,
+      kcal: kcal100*factor,
+      prot: prot100*factor,
+      carb: carb100*factor,
+      fat: fat100*factor,
       note: note || null,
       source: manualPrefill ? 'barcode' : 'manual'
     };
@@ -1557,8 +1805,12 @@
           manualPrefill = null;
           $('#manualTitle').textContent = 'Aggiungi alimento';
           $('#manualMealLabel').textContent = pendingMealTarget;
-          $('#manualName').value=''; $('#manualKcal').value=''; $('#manualProt').value='';
-          $('#manualCarb').value=''; $('#manualFat').value=''; $('#manualNote').value='';
+          $('#manualName').value='';
+          $('#manualKcal100').value=''; $('#manualProt100').value='';
+          $('#manualCarb100').value=''; $('#manualFat100').value='';
+          $('#manualQty').value = 100;
+          $('#manualNote').value='';
+          updateManualPreview();
           openModal('modalManual');
         });
         return;
@@ -1584,14 +1836,16 @@
       $('#useOffBtn').addEventListener('click', ()=>{
         closeModal(closeModalId);
         manualPrefill = per100;
-        $('#manualTitle').textContent = 'Conferma quantità';
+        $('#manualTitle').textContent = 'Quanti grammi ne hai mangiati?';
         $('#manualMealLabel').textContent = pendingMealTarget;
         $('#manualName').value = p.product_name || 'Prodotto scansionato';
-        $('#manualKcal').value = Math.round(per100.kcal);
-        $('#manualProt').value = per100.prot.toFixed(1);
-        $('#manualCarb').value = per100.carb.toFixed(1);
-        $('#manualFat').value = per100.fat.toFixed(1);
-        $('#manualNote').value = 'Valori per 100g — modifica in base alla porzione reale';
+        $('#manualKcal100').value = Math.round(per100.kcal);
+        $('#manualProt100').value = per100.prot.toFixed(1);
+        $('#manualCarb100').value = per100.carb.toFixed(1);
+        $('#manualFat100').value = per100.fat.toFixed(1);
+        $('#manualQty').value = 100;
+        $('#manualNote').value = '';
+        updateManualPreview();
         openModal('modalManual');
       });
     }catch(err){
@@ -1746,6 +2000,224 @@
   });
 
   let weightChartInstance = null;
+  /* ---------- sezione Progressi ---------- */
+  async function computeDietAdherence(days){
+    const dates = await storeListDates('checked:');
+    const today = new Date();
+    const cutoff = new Date(today); cutoff.setDate(cutoff.getDate() - days);
+    let totalItems = 0, checkedItems = 0, daysWithData = 0;
+    for(const d of dates){
+      const [y,m,dd] = d.split('-').map(Number);
+      const dDate = new Date(y, m-1, dd);
+      if(dDate < cutoff || dDate > today) continue;
+      const key = WEEKDAY_KEYS[dDate.getDay()];
+      const blocks = activePlan[key] || PLAN_TEMPLATE[key] || [];
+      const dayTotal = blocks.reduce((a,b)=>a+b.items.length, 0);
+      if(dayTotal === 0) continue;
+      const checkedMapForDay = await storeGet('checked:'+d, {});
+      const dayChecked = blocks.reduce((a,b)=>a + b.items.filter(it=>checkedMapForDay[it.id]).length, 0);
+      totalItems += dayTotal; checkedItems += dayChecked; daysWithData++;
+    }
+    return { totalItems, checkedItems, daysWithData, pct: totalItems>0 ? Math.round((checkedItems/totalItems)*100) : null };
+  }
+
+  async function renderDietAdherence(){
+    const wrap = $('#dietAdherenceContent');
+    wrap.innerHTML = `<div class="empty">Calcolo in corso...</div>`;
+    const [w7, w30] = await Promise.all([computeDietAdherence(7), computeDietAdherence(30)]);
+    function row(label, res){
+      if(res.pct === null) return `<div class="measure-row"><div>${label}</div><div class="mval">—</div></div>`;
+      return `<div class="measure-row">
+        <div>${label}<div style="font-size:11px; color:var(--ink-dim); font-family:var(--mono); margin-top:2px;">${res.checkedItems}/${res.totalItems} alimenti spuntati</div></div>
+        <div class="mval">${res.pct}%</div>
+      </div>`;
+    }
+    wrap.innerHTML = row('Ultimi 7 giorni', w7) + row('Ultimi 30 giorni', w30);
+  }
+
+  function renderMaxliftsProgress(){
+    const wrap = $('#maxliftsProgressContent');
+    const entries = Object.values(maxlifts);
+    if(entries.length===0){ wrap.innerHTML = '<div class="empty">Nessun massimale salvato ancora</div>'; return; }
+    wrap.innerHTML = entries.map(m=>{
+      const hist = Array.isArray(m.history) ? m.history : [];
+      if(hist.length < 2){
+        return `<div class="measure-row"><div>${escapeHtml(m.label)}</div><div class="mval">${m.weight} kg</div></div>`;
+      }
+      const first = hist[0].weight;
+      const last = hist[hist.length-1].weight;
+      const diff = last - first;
+      const pct = first ? Math.round((diff/first)*100) : 0;
+      const sign = diff > 0 ? '+' : '';
+      const color = diff > 0 ? 'var(--sage)' : (diff < 0 ? 'var(--rust)' : 'var(--ink-dim)');
+      return `<div class="measure-row">
+        <div>${escapeHtml(m.label)}<div style="font-size:11px; color:var(--ink-dim); font-family:var(--mono); margin-top:2px;">${first}kg → ${last}kg</div></div>
+        <div class="mval" style="color:${color};">${sign}${diff}kg (${sign}${pct}%)</div>
+      </div>`;
+    }).join('');
+  }
+
+  async function renderMeasureProgress(){
+    const wrap = $('#measureProgressContent');
+    const dates = await storeListDates('measure:');
+    if(dates.length === 0){ wrap.innerHTML = '<div class="empty">Nessuna misura registrata ancora</div>'; return; }
+    const points = [];
+    for(const d of dates){
+      const val = await storeGet('measure:'+d, null);
+      if(val) points.push({date:d, ...val});
+    }
+    points.sort((a,b)=> a.date.localeCompare(b.date));
+    if(points.length < 2){
+      wrap.innerHTML = `<div class="empty">Serve almeno una seconda misurazione per calcolare un andamento (ne hai ${points.length})</div>`;
+      return;
+    }
+    const first = points[0], last = points[points.length-1];
+    function deltaRow(label, key, unit){
+      if(first[key] == null || last[key] == null) return '';
+      const diff = Math.round((last[key]-first[key])*10)/10;
+      const sign = diff > 0 ? '+' : '';
+      const color = diff === 0 ? 'var(--ink-dim)' : 'var(--amber)';
+      return `<div class="measure-row">
+        <div>${label}<div style="font-size:11px; color:var(--ink-dim); font-family:var(--mono); margin-top:2px;">${first[key]}${unit} (${first.date}) → ${last[key]}${unit} (${last.date})</div></div>
+        <div class="mval" style="color:${color};">${sign}${diff}${unit}</div>
+      </div>`;
+    }
+    wrap.innerHTML = [
+      deltaRow('Peso', 'weight', 'kg'),
+      deltaRow('Vita', 'waist', 'cm'),
+      deltaRow('Fianchi', 'hips', 'cm'),
+      deltaRow('Petto', 'chest', 'cm'),
+      deltaRow('Braccio', 'arm', 'cm'),
+    ].filter(Boolean).join('');
+  }
+
+  /* ---------- ricette (TheMealDB) ---------- */
+  const IT_EN_INGREDIENTS = {
+    'pollo':'chicken','petto di pollo':'chicken breast','tacchino':'turkey','manzo':'beef','maiale':'pork',
+    'pesce':'fish','salmone':'salmon','tonno':'tuna','merluzzo':'cod','gamberi':'shrimp','gamberetti':'shrimp',
+    'uova':'egg','uovo':'egg','formaggio':'cheese','mozzarella':'mozzarella','parmigiano':'parmesan',
+    'latte':'milk','yogurt':'yogurt','panna':'cream','burro':'butter',
+    'riso':'rice','pasta':'pasta','pane':'bread','farina':'flour','patate':'potato','patata':'potato',
+    'pomodoro':'tomato','pomodori':'tomato','cipolla':'onion','aglio':'garlic',
+    'zucchine':'zucchini','zucchina':'zucchini','melanzane':'eggplant','melanzana':'eggplant',
+    'spinaci':'spinach','broccoli':'broccoli','funghi':'mushroom','carote':'carrot','carota':'carrot',
+    'peperoni':'pepper','peperone':'pepper','lattuga':'lettuce','insalata':'lettuce',
+    'limone':'lemon','arancia':'orange','mela':'apple','banana':'banana','uva':'grape',
+    'basilico':'basil','prezzemolo':'parsley','olio':'olive oil','zucchero':'sugar','miele':'honey',
+    'fagioli':'beans','lenticchie':'lentils','ceci':'chickpeas','piselli':'peas',
+    'noci':'walnut','mandorle':'almond','cioccolato':'chocolate',
+  };
+  function translateIngredient(it){
+    const key = it.trim().toLowerCase();
+    return IT_EN_INGREDIENTS[key] || key; // se non trovato, prova comunque con il termine dato (potrebbe già essere in inglese)
+  }
+
+  async function searchRecipes(){
+    const raw = $('#recipeIngredientsInput').value.trim();
+    if(!raw){ toast('Scrivi almeno un ingrediente'); return; }
+    const wanted = raw.split(',').map(s=>s.trim()).filter(Boolean);
+    const wantedEn = wanted.map(translateIngredient);
+    const resultsCard = $('#recipeResultsCard');
+    const resultsWrap = $('#recipeResults');
+    resultsCard.style.display = 'block';
+    resultsWrap.innerHTML = '<div class="empty">Cerco ricette...</div>';
+    try{
+      const primary = wantedEn[0];
+      const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(primary)}`);
+      const data = await res.json();
+      if(!data.meals){
+        resultsWrap.innerHTML = '<div class="empty">Nessuna ricetta trovata con questi ingredienti. Prova con un ingrediente principale diverso (es. "pollo", "riso", "salmone").</div>';
+        return;
+      }
+      const candidates = data.meals.slice(0, 12);
+      const details = await Promise.all(candidates.map(m =>
+        fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${m.idMeal}`).then(r=>r.json()).then(d=>d.meals[0]).catch(()=>null)
+      ));
+      const scored = details.filter(Boolean).map(meal=>{
+        const ingredientsText = [];
+        for(let i=1;i<=20;i++){
+          const ing = meal['strIngredient'+i];
+          if(ing && ing.trim()) ingredientsText.push(ing.trim().toLowerCase());
+        }
+        const matchCount = wantedEn.filter(w => ingredientsText.some(ing => ing.includes(w) || w.includes(ing))).length;
+        return { meal, matchCount, ingredientsText };
+      });
+      scored.sort((a,b)=> b.matchCount - a.matchCount);
+      if(scored.length===0){
+        resultsWrap.innerHTML = '<div class="empty">Nessuna ricetta trovata.</div>';
+        return;
+      }
+      resultsWrap.innerHTML = scored.map(s=>`
+        <div class="recipe-card" data-id="${s.meal.idMeal}">
+          <div class="recipe-thumb"><img src="${s.meal.strMealThumb}/medium" alt=""></div>
+          <div>
+            <div class="recipe-name">${escapeHtml(s.meal.strMeal)}</div>
+            <div class="recipe-match">${s.matchCount}/${wanted.length} ingredienti che hai</div>
+          </div>
+        </div>
+      `).join('');
+      $$('.recipe-card', resultsWrap).forEach(card=>{
+        card.addEventListener('click', ()=>openRecipeDetail(card.dataset.id));
+      });
+    }catch(err){
+      resultsWrap.innerHTML = '<div class="empty">Errore di connessione al database ricette. Riprova.</div>';
+      console.error(err);
+    }
+  }
+  $('#recipeSearchBtn').addEventListener('click', searchRecipes);
+  $('#recipeIngredientsInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') searchRecipes(); });
+
+  async function openRecipeDetail(id){
+    const content = $('#recipeDetailContent');
+    content.innerHTML = '<div class="empty">Carico la ricetta...</div>';
+    openModal('modalRecipeDetail');
+    try{
+      const res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`);
+      const data = await res.json();
+      const meal = data.meals[0];
+      const ingredients = [];
+      for(let i=1;i<=20;i++){
+        const ing = meal['strIngredient'+i];
+        const measure = meal['strMeasure'+i];
+        if(ing && ing.trim()) ingredients.push({ing:ing.trim(), measure:(measure||'').trim()});
+      }
+      const instructions = (meal.strInstructions||'').split(/\r?\n+/).filter(Boolean);
+      content.innerHTML = `
+        <div class="recipe-hero"><img src="${meal.strMealThumb}/large" alt=""></div>
+        <h2 style="margin-top:0;">${escapeHtml(meal.strMeal)}</h2>
+        <div class="eyebrow" style="margin-bottom:12px;">${escapeHtml(meal.strArea||'')} ${meal.strCategory?'· '+escapeHtml(meal.strCategory):''}</div>
+        <div class="ex-section-title">Ingredienti</div>
+        ${ingredients.map(i=>`<div class="recipe-ing-row"><span>${escapeHtml(i.ing)}</span><span class="amt">${escapeHtml(i.measure)}</span></div>`).join('')}
+        <div class="ex-section-title">Preparazione</div>
+        <div class="ex-text">${instructions.map(p=>`<p style="margin:0 0 10px;">${escapeHtml(p)}</p>`).join('')}</div>
+        <button class="btn primary block" id="recipeAddToShoppingBtn" style="margin-top:10px;">🛒 Aggiungi ingredienti alla spesa</button>
+      `;
+      $('#recipeAddToShoppingBtn').addEventListener('click', async ()=>{
+        const existingKeys = new Set(shoppingItems.map(i=>normalizeExName(i.name)));
+        let added = 0;
+        ingredients.forEach(i=>{
+          const key = normalizeExName(i.ing);
+          if(!existingKeys.has(key)){
+            shoppingItems.push({ id: uid(), name:i.ing, checked:false, qtyLabel:i.measure||null });
+            existingKeys.add(key);
+            added++;
+          }
+        });
+        if(added>0) await storeSet('shopping', shoppingItems);
+        toast(added>0 ? `${added} ingredienti aggiunti alla spesa` : 'Erano già tutti in lista');
+      });
+    }catch(err){
+      content.innerHTML = '<div class="empty">Errore nel caricamento della ricetta.</div>';
+      console.error(err);
+    }
+  }
+
+  function renderProgressi(){
+    renderDietAdherence();
+    renderMaxliftsProgress();
+    renderMeasureProgress();
+  }
+
   async function loadMeasureHistory(){
     const dates = await storeListDates('measure:');
     const points = [];
@@ -1808,8 +2280,10 @@
     dl.innerHTML = Array.from(names).map(n=>`<option value="${escapeHtml(n)}">`).join('');
   }
 
+  let editingMaxliftKey = null; // se valorizzato, il salvataggio modifica invece di aggiungere
+
   function renderMaxliftsList(){
-    const wrap = $('#maxliftsList');
+    const wrap = $('#maxliftsInlineList');
     const entries = Object.entries(maxlifts);
     if(entries.length===0){ wrap.innerHTML = '<div class="empty">Nessun massimale salvato ancora</div>'; return; }
     wrap.innerHTML = entries.map(([key,m])=>`
@@ -1817,11 +2291,14 @@
         <div class="name">${escapeHtml(m.label)}</div>
         <div style="display:flex;align-items:center;">
           <span class="kcal">${m.weight} kg</span>
+          <button class="qty-edit-btn" data-edit-key="${escapeHtml(key)}" style="margin-left:8px;" title="Modifica">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-4.5L16.5 4a2.1 2.1 0 0 1 3 3L7 19.5 4 21Z"/></svg>
+          </button>
           <button class="del" data-key="${escapeHtml(key)}">✕</button>
         </div>
       </div>
     `).join('');
-    $$('#maxliftsList .del').forEach(btn=>{
+    $$('#maxliftsInlineList .del').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
         delete maxlifts[btn.dataset.key];
         await storeSet('maxlifts', maxlifts);
@@ -1830,10 +2307,22 @@
         updateWorkoutComputed();
       });
     });
+    $$('#maxliftsInlineList [data-edit-key]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const key = btn.dataset.editKey;
+        const m = maxlifts[key];
+        editingMaxliftKey = key;
+        $('#maxliftModalTitle').textContent = 'Modifica massimale';
+        $('#maxliftExercise').value = m.label;
+        $('#maxliftWeight').value = m.weight;
+        openModal('modalMaxlifts');
+      });
+    });
   }
 
-  $('#btnOpenMaxlifts').addEventListener('click', ()=>{
-    renderMaxliftsList();
+  $('#btnAddMaxlift').addEventListener('click', ()=>{
+    editingMaxliftKey = null;
+    $('#maxliftModalTitle').textContent = 'Aggiungi massimale';
     $('#maxliftExercise').value = ''; $('#maxliftWeight').value = '';
     openModal('modalMaxlifts');
   });
@@ -1842,11 +2331,18 @@
     const name = $('#maxliftExercise').value.trim();
     const weight = Number($('#maxliftWeight').value);
     if(!name || !weight){ toast('Inserisci esercizio e peso'); return; }
-    maxlifts[normalizeExName(name)] = { label:name, weight };
+    const key = normalizeExName(name);
+    // se si sta modificando un esercizio e il nome è cambiato, rimuovo la voce vecchia
+    if(editingMaxliftKey && editingMaxliftKey !== key){ delete maxlifts[editingMaxliftKey]; }
+    const existing = maxlifts[key];
+    const history = (existing && Array.isArray(existing.history)) ? existing.history.slice() : (existing ? [{date: 'precedente', weight: existing.weight}] : []);
+    history.push({ date: fmtDate(new Date()), weight });
+    maxlifts[key] = { label:name, weight, history };
     await storeSet('maxlifts', maxlifts);
     renderMaxliftsList();
     populateExerciseDatalist();
-    $('#maxliftExercise').value = ''; $('#maxliftWeight').value = '';
+    closeModal('modalMaxlifts');
+    editingMaxliftKey = null;
     toast('Massimale salvato');
   });
 
@@ -2026,22 +2522,80 @@
   async function loadShopping(){
     shoppingItems = await storeGet('shopping', []);
   }
+  let categoryOverrides = {}; // { nomeAlimentoNormalizzato: 'Verdura'|'Frutta'|'Proteine'|'Carboidrati'|'Altro' }
+  async function loadCategoryOverrides(){
+    categoryOverrides = await storeGet('categoryOverrides', {});
+  }
+  const CATEGORY_ORDER = ['Verdura', 'Frutta', 'Proteine', 'Carboidrati', 'Altro'];
+  const CATEGORY_KEYWORDS = {
+    'Verdura': ['pomodor','zucchin','spinaci','broccol','insalata','lattuga','peperon','finocch','carot','cavolo','melanzan','cetriol','porr','fagiolin','zucca','cipolla','aglio','fungh','rucola','radicchio','sedano','verdur','bietol','asparag'],
+    'Frutta': ['mela','mele','banana','kiwi','mirtill','uva','prugn','melone','pera','pere','albicocc','arancia','arance','fragol','ananas','mandarin','pesca','pesche','frutt'],
+    'Proteine': ['pollo','tacchino','manzo','maiale','pesce','salmone','tonno','gamber','uovo','uova','tofu','seitan','formaggio','delicapra','affettato','prosciutto','bresaola','lenticchi','fagioli','ceci','spada','merluzzo','nasello','piselli','kefir','latte'],
+    'Carboidrati': ['pane','pasta','riso','patat','cracker','avena','basmati','semola','fette biscottate','cereali'],
+  };
+  function categorizeIngredient(name){
+    const key = normalizeExName(name);
+    if(categoryOverrides[key]) return categoryOverrides[key];
+    const n = (name||'').toLowerCase();
+    for(const cat of ['Verdura','Frutta','Proteine','Carboidrati']){
+      if(CATEGORY_KEYWORDS[cat].some(k=>n.includes(k))) return cat;
+    }
+    return 'Altro';
+  }
+
+  let categoryPickItemName = null;
+  function openCategoryPickModal(itemName){
+    categoryPickItemName = itemName;
+    $('#categoryPickName').textContent = itemName;
+    const current = categorizeIngredient(itemName);
+    buildChips($('#categoryPickChips'), CATEGORY_ORDER, ()=>current, async (chosen)=>{
+      categoryOverrides[normalizeExName(itemName)] = chosen;
+      await storeSet('categoryOverrides', categoryOverrides);
+      closeModal('modalCategoryPick');
+      renderShopping();
+      toast(`"${itemName}" andrà sempre in ${chosen}`);
+    });
+    openModal('modalCategoryPick');
+  }
+
   function renderShopping(){
     const wrap = $('#shoppingList');
     const total = shoppingItems.length;
     const done = shoppingItems.filter(i=>i.checked).length;
     $('#shoppingCount').textContent = total ? `${done}/${total}` : '';
     if(total===0){ wrap.innerHTML = '<div class="empty">La lista è vuota, aggiungi qualcosa qui sopra</div>'; return; }
-    wrap.innerHTML = shoppingItems.map(i=>`
-      <div class="shop-item ${i.checked?'checked':''}" data-id="${i.id}">
-        <div class="checkbox ${i.checked?'on':''}">${i.checked?'✓':''}</div>
-        <div style="flex:1;">
-          <div class="name">${escapeHtml(i.name)}</div>
-          ${i.qtyLabel ? `<div class="meta" style="font-size:12px; color:var(--ink-dim); font-family:var(--mono); margin-top:2px;">${escapeHtml(i.qtyLabel)}</div>` : ''}
-        </div>
-        <button class="del">✕</button>
-      </div>
-    `).join('');
+
+    const groups = {};
+    CATEGORY_ORDER.forEach(c => groups[c] = []);
+    shoppingItems.forEach(item => groups[categorizeIngredient(item.name)].push(item));
+
+    let html = '';
+    CATEGORY_ORDER.forEach(cat=>{
+      const items = groups[cat];
+      if(items.length===0) return;
+      const doneCat = items.filter(i=>i.checked).length;
+      html += `<div class="meal-group">
+        <div class="meal-title"><span>${escapeHtml(cat)}</span><span class="meal-subtotal">${doneCat}/${items.length}</span></div>`;
+      items.forEach(i=>{
+        html += `<div class="shop-item ${i.checked?'checked':''}" data-id="${i.id}">
+          <div class="checkbox ${i.checked?'on':''}">${i.checked?'✓':''}</div>
+          <div style="flex:1;">
+            <div class="name">${escapeHtml(i.name)}</div>
+            ${i.qtyLabel ? `<div class="meta" style="font-size:12px; color:var(--ink-dim); font-family:var(--mono); margin-top:2px;">${escapeHtml(i.qtyLabel)}</div>` : ''}
+          </div>
+          <button class="qty-edit-btn" data-cat-name="${escapeHtml(i.name)}" title="Cambia categoria">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-4.5L16.5 4a2.1 2.1 0 0 1 3 3L7 19.5 4 21Z"/></svg>
+          </button>
+          <button class="del">✕</button>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+    wrap.innerHTML = html;
+
+    $$('.qty-edit-btn[data-cat-name]', wrap).forEach(btn=>{
+      btn.addEventListener('click', ()=>openCategoryPickModal(btn.dataset.catName));
+    });
     $$('.shop-item', wrap).forEach(row=>{
       row.querySelector('.checkbox').addEventListener('click', async ()=>{
         const item = shoppingItems.find(i=>i.id===row.dataset.id);
@@ -2079,15 +2633,17 @@
     const dstr = fmtDate(currentDate);
     foodEntries = await storeGet('food:'+dstr, []);
     checkedMap = await storeGet('checked:'+dstr, {});
+    planQtyOverride = await storeGet('planqty:'+dstr, {});
     workoutEntries = await storeGet('workouts:'+dstr, []);
     await loadWaterDay();
     renderAll();
   }
   function renderAll(){
     if(currentTab==='diario'){ renderDiario(); renderWater(); }
-    if(currentTab==='allenamenti') renderWorkouts();
+    if(currentTab==='allenamenti'){ renderWorkouts(); renderMaxliftsList(); }
     if(currentTab==='misure') loadMeasureHistory();
     if(currentTab==='spesa') renderShopping();
+    if(currentTab==='progressi') renderProgressi();
   }
 
   async function boot(){
@@ -2099,6 +2655,7 @@
     await loadMaxlifts();
     await loadWaterTarget();
     await loadShopping();
+    await loadCategoryOverrides();
     await loadDay();
 
     // mostra la card "Attiva Face ID" solo se disponibile e non ancora configurato
